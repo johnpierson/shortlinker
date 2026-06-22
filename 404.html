@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Redirecting… | jtp.fyi</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="redirect-page">
+    <main class="redirect-card"><p class="eyebrow">JTP.FYI</p><h1 id="redirect-title">Finding that link…</h1><p id="redirect-message">Just a moment.</p><a id="redirect-home" href="/">Back to jtp.fyi</a></main>
+    <script>
+      (async function () {
+        const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
+        const title = document.getElementById("redirect-title");
+        const message = document.getElementById("redirect-message");
+        if (!path || path.includes("/")) { title.textContent = "That link isn’t here."; message.textContent = "Check the address, or head home for the latest links."; return; }
+        try {
+          const response = await fetch("/links.json", { cache: "no-store" });
+          const links = await response.json();
+          const link = links.find(function (item) { return item.slug.toLowerCase() === path.toLowerCase(); });
+          if (!link) { title.textContent = "That link isn’t here."; message.textContent = "Check the address, or head home for the latest links."; return; }
+          title.textContent = "On your way to " + link.label + "…";
+          message.textContent = "Redirecting now.";
+          window.location.replace(link.url);
+        } catch (error) { title.textContent = "Something went sideways."; message.textContent = "The link directory could not be loaded."; }
+      }());
+    </script>
+  </body>
+</html>
