@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Admin | jtp.fyi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell admin-page">
+      <header class="site-header"><a class="wordmark" href="/">jtp<span>.fyi</span></a><span class="admin-badge">OWNER MODE</span></header>
+      <section class="admin-content" aria-labelledby="admin-title">
+        <p class="eyebrow">SHORTCUT CONTROL PANEL</p>
+        <h1 id="admin-title">Make a little<br />link happen.</h1>
+        <form id="link-form" class="link-form">
+          <label for="slug">Short path <input id="slug" maxlength="80" pattern="[a-zA-Z0-9_-]+" placeholder="notes" required /></label>
+          <label for="destination">Destination URL <input id="destination" type="url" placeholder="https://example.com" required /></label>
+          <label for="label">Label <input id="label" maxlength="120" placeholder="A helpful thing" required /></label>
+          <button class="primary-button" type="submit">Save link <span aria-hidden="true">→</span></button>
+        </form>
+        <p id="form-status" class="form-status" aria-live="polite"></p>
+      </section>
+      <section class="admin-links" aria-labelledby="existing-links-title"><div class="section-heading"><h2 id="existing-links-title">KV links</h2><span id="link-count" class="link-count">Loading…</span></div><div id="admin-link-list" class="admin-link-list"></div></section>
+    </main>
+    <script src="/admin.js"></script>
+  </body>
+</html>

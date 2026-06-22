@@ -20,3 +20,7 @@ In **Storage & Databases → KV → SHORTLINKS**, create a key using the short p
 ```
 
 KV entries take precedence over the starter links, so they are ready for a future protected admin interface.
+
+## Admin prototype (branch only)
+
+The `codex/admin-panel` branch adds `/admin` plus a KV API at `/api/admin/links`. Protect both paths with Cloudflare Access before deploying the branch. The landing page remains a static asset; only the API is handled by the Worker.
