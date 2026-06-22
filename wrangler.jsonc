@@ -10,8 +10,8 @@
   },
   "rules": [
     {
-      "type": "Text",
-      "globs": ["public/**/*.css", "public/**/*.js", "public/**/*.json"],
+      "type": "Data",
+      "globs": ["public/**/*.html", "public/**/*.css", "public/**/*.js", "public/**/*.json"],
       "fallthrough": false
     }
   ],

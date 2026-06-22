@@ -1,20 +1,22 @@
-import adminHtml from "./public/admin.html";
-import adminScript from "./public/admin.js";
-import appScript from "./public/app.js";
-import indexHtml from "./public/index.html";
-import linksJson from "./public/links.json";
-import notFoundHtml from "./public/404.html";
-import styles from "./public/styles.css";
+import adminHtmlBytes from "./public/admin.html";
+import adminScriptBytes from "./public/admin.js";
+import appScriptBytes from "./public/app.js";
+import indexHtmlBytes from "./public/index.html";
+import linksJsonBytes from "./public/links.json";
+import notFoundHtmlBytes from "./public/404.html";
+import stylesBytes from "./public/styles.css";
+
+const decodeText = bytes => new TextDecoder().decode(bytes);
 
 const STATIC_FILES = {
-  "/": { body: indexHtml, type: "text/html; charset=UTF-8" },
-  "/index.html": { body: indexHtml, type: "text/html; charset=UTF-8" },
-  "/admin": { body: adminHtml, type: "text/html; charset=UTF-8" },
-  "/admin.html": { body: adminHtml, type: "text/html; charset=UTF-8" },
-  "/app.js": { body: appScript, type: "application/javascript; charset=UTF-8" },
-  "/admin.js": { body: adminScript, type: "application/javascript; charset=UTF-8" },
-  "/styles.css": { body: styles, type: "text/css; charset=UTF-8" },
-  "/links.json": { body: linksJson, type: "application/json; charset=UTF-8" },
+  "/": { body: decodeText(indexHtmlBytes), type: "text/html; charset=UTF-8" },
+  "/index.html": { body: decodeText(indexHtmlBytes), type: "text/html; charset=UTF-8" },
+  "/admin": { body: decodeText(adminHtmlBytes), type: "text/html; charset=UTF-8" },
+  "/admin.html": { body: decodeText(adminHtmlBytes), type: "text/html; charset=UTF-8" },
+  "/app.js": { body: decodeText(appScriptBytes), type: "application/javascript; charset=UTF-8" },
+  "/admin.js": { body: decodeText(adminScriptBytes), type: "application/javascript; charset=UTF-8" },
+  "/styles.css": { body: decodeText(stylesBytes), type: "text/css; charset=UTF-8" },
+  "/links.json": { body: decodeText(linksJsonBytes), type: "application/json; charset=UTF-8" },
 };
 
 const STARTER_LINKS = {
@@ -65,7 +67,7 @@ export default {
 };
 
 function notFoundResponse() {
-  return new Response(notFoundHtml, { status: 404, headers: { "Content-Type": "text/html; charset=UTF-8" } });
+  return new Response(decodeText(notFoundHtmlBytes), { status: 404, headers: { "Content-Type": "text/html; charset=UTF-8" } });
 }
 
 async function handleAdminApi(request, env, url) {
