@@ -4,9 +4,9 @@ A personal short-link site for `jtp.fyi`, deployed as a Cloudflare Worker. The s
 
 ## Deploy to Cloudflare
 
-1. In Cloudflare KV, create a namespace named `SHORTLINKS` and copy its namespace ID.
-2. Replace `REPLACE_WITH_YOUR_KV_NAMESPACE_ID` in `wrangler.toml` with that ID.
-3. Connect this repository to the `shortlinker` Worker through Workers Builds, or deploy with Wrangler.
+1. In Cloudflare KV, create a namespace named `SHORTLINKS`.
+2. Connect this repository to the `shortlinker` Worker through Workers Builds, or deploy with Wrangler.
+3. In **Workers & Pages → shortlinker → Settings → Bindings**, add a KV namespace binding named `SHORTLINKS` and select that namespace.
 4. In **Workers & Pages → shortlinker → Settings → Domains & Routes**, add `jtp.fyi` as a custom domain.
 
 The Worker serves the landing page as static assets, then checks KV for short links. It falls back to the starter links in `worker.mjs` until KV has been populated.
