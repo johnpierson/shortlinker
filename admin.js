@@ -38,11 +38,19 @@ function renderLinks() {
 
 async function api(path, options) {
   const response = await fetch(path, options);
-  if (!response.ok) {
-    const body = await response.json();
-    throw new Error(body.error || "Something went wrong.");
+  const text = await response.text();
+  let body = null;
+  if (text) {
+    try {
+      body = JSON.parse(text);
+    } catch {
+      throw new Error(`The admin request returned an unexpected response (${response.status}). Check that Cloudflare Access allows both /admin* and /api/admin/*.`);
+    }
   }
-  return response.status === 204 ? null : response.json();
+  if (!response.ok) {
+    throw new Error(body?.error || `The admin request was blocked (${response.status}). Check the Cloudflare Access policy for this path.`);
+  }
+  return body;
 }
 
 async function loadLinks() {
