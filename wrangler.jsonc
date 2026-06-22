@@ -1,13 +1,29 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "shortlinker",
+  "main": "worker.mjs",
   "compatibility_date": "2026-06-22",
+  "workers_dev": false,
+  "preview_urls": false,
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS"
   },
+  "routes": [
+    {
+      "pattern": "jtp.fyi",
+      "custom_domain": true
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SHORTLINKS",
+      "id": "1164f82de71e4328838366925812ee57"
+    }
+  ],
   "compatibility_flags": [
     "nodejs_compat"
   ]
