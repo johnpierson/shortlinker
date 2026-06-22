@@ -1,6 +1,7 @@
 name = "shortlinker"
 main = "worker.mjs"
 compatibility_date = "2026-06-22"
+workers_dev = false
 
 [assets]
 directory = "."
