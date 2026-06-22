@@ -1,3 +1,22 @@
+import adminHtml from "./public/admin.html";
+import adminScript from "./public/admin.js";
+import appScript from "./public/app.js";
+import indexHtml from "./public/index.html";
+import linksJson from "./public/links.json";
+import notFoundHtml from "./public/404.html";
+import styles from "./public/styles.css";
+
+const STATIC_FILES = {
+  "/": { body: indexHtml, type: "text/html; charset=UTF-8" },
+  "/index.html": { body: indexHtml, type: "text/html; charset=UTF-8" },
+  "/admin": { body: adminHtml, type: "text/html; charset=UTF-8" },
+  "/admin.html": { body: adminHtml, type: "text/html; charset=UTF-8" },
+  "/app.js": { body: appScript, type: "application/javascript; charset=UTF-8" },
+  "/admin.js": { body: adminScript, type: "application/javascript; charset=UTF-8" },
+  "/styles.css": { body: styles, type: "text/css; charset=UTF-8" },
+  "/links.json": { body: linksJson, type: "application/json; charset=UTF-8" },
+};
+
 const STARTER_LINKS = {
   bio: {
     url: "https://bio.link/johntpierson",
@@ -21,16 +40,14 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname === "/admin") return env.ASSETS.fetch(new Request(new URL("/admin.html", url), request));
-
     if (url.pathname.startsWith("/api/admin/")) return handleAdminApi(request, env, url);
+
+    const file = STATIC_FILES[url.pathname];
+    if (file) return new Response(file.body, { headers: { "Content-Type": file.type } });
 
     const slug = url.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
 
-    // Let the static asset service render the landing page and its supporting files.
-    if (!slug || slug.includes("/")) {
-      return env.ASSETS.fetch(request);
-    }
+    if (!slug || slug.includes("/")) return notFoundResponse();
 
     // KV becomes the source of truth once the admin interface is added. Starter
     // links stay available while the namespace is being populated.
@@ -43,9 +60,13 @@ export default {
       return Response.redirect(link.url, 302);
     }
 
-    return env.ASSETS.fetch(new Request(new URL("/404.html", url), request));
+    return notFoundResponse();
   },
 };
+
+function notFoundResponse() {
+  return new Response(notFoundHtml, { status: 404, headers: { "Content-Type": "text/html; charset=UTF-8" } });
+}
 
 async function handleAdminApi(request, env, url) {
   if (!env.SHORTLINKS) {
