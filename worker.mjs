@@ -12,7 +12,7 @@ const STARTER_LINKS = {
     label: "GitHub",
   },
   linkedin: {
-    url: "https://www.linkedin.com/in/johnpierson/",
+    url: "https://www.linkedin.com/in/johntpierson/",
     label: "LinkedIn",
   },
 };
