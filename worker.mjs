@@ -1,24 +1,3 @@
-import adminHtmlBytes from "./public/admin.html";
-import adminScriptBytes from "./public/admin.js";
-import appScriptBytes from "./public/app.js";
-import indexHtmlBytes from "./public/index.html";
-import linksJsonBytes from "./public/links.json";
-import notFoundHtmlBytes from "./public/404.html";
-import stylesBytes from "./public/styles.css";
-
-const decodeText = bytes => new TextDecoder().decode(bytes);
-
-const STATIC_FILES = {
-  "/": { body: decodeText(indexHtmlBytes), type: "text/html; charset=UTF-8" },
-  "/index.html": { body: decodeText(indexHtmlBytes), type: "text/html; charset=UTF-8" },
-  "/admin": { body: decodeText(adminHtmlBytes), type: "text/html; charset=UTF-8" },
-  "/admin.html": { body: decodeText(adminHtmlBytes), type: "text/html; charset=UTF-8" },
-  "/app.js": { body: decodeText(appScriptBytes), type: "application/javascript; charset=UTF-8" },
-  "/admin.js": { body: decodeText(adminScriptBytes), type: "application/javascript; charset=UTF-8" },
-  "/styles.css": { body: decodeText(stylesBytes), type: "text/css; charset=UTF-8" },
-  "/links.json": { body: decodeText(linksJsonBytes), type: "application/json; charset=UTF-8" },
-};
-
 const STARTER_LINKS = {
   bio: {
     url: "https://bio.link/johntpierson",
@@ -42,14 +21,16 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname.startsWith("/api/admin/")) return handleAdminApi(request, env, url);
+    if (url.pathname === "/admin") return env.ASSETS.fetch(new Request(new URL("/admin.html", url), request));
 
-    const file = STATIC_FILES[url.pathname];
-    if (file) return new Response(file.body, { headers: { "Content-Type": file.type } });
+    if (url.pathname.startsWith("/api/admin/")) return handleAdminApi(request, env, url);
 
     const slug = url.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
 
-    if (!slug || slug.includes("/")) return notFoundResponse();
+    // Let the static asset service render the landing page and its supporting files.
+    if (!slug || slug.includes("/")) {
+      return env.ASSETS.fetch(request);
+    }
 
     // KV becomes the source of truth once the admin interface is added. Starter
     // links stay available while the namespace is being populated.
@@ -62,13 +43,9 @@ export default {
       return Response.redirect(link.url, 302);
     }
 
-    return notFoundResponse();
+    return env.ASSETS.fetch(new Request(new URL("/404.html", url), request));
   },
 };
-
-function notFoundResponse() {
-  return new Response(decodeText(notFoundHtmlBytes), { status: 404, headers: { "Content-Type": "text/html; charset=UTF-8" } });
-}
 
 async function handleAdminApi(request, env, url) {
   if (!env.SHORTLINKS) {
