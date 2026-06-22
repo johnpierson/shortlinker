@@ -28,7 +28,7 @@ form.addEventListener("submit", async event => {
   button.disabled = true;
   setStatus("Saving link…");
   try {
-    await request("/api/admin/links", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: values.get("slug").trim(), url: values.get("destination").trim(), label: values.get("label").trim() }) });
+    await request("/api/admin/links", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: String(values.get("slug") || "").trim(), url: String(values.get("destination") || "").trim(), label: String(values.get("label") || "").trim() }) });
     form.reset(); setStatus("Link saved.", "success"); await loadLinks();
   } catch (error) { setStatus(error.message, "error"); }
   finally { button.disabled = false; }
