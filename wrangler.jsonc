@@ -11,7 +11,7 @@
   "rules": [
     {
       "type": "Data",
-      "globs": ["public/**/*.html", "public/**/*.css", "public/**/*.js", "public/**/*.json"],
+      "globs": ["public/*.html", "public/*.css", "public/*.js", "public/*.json"],
       "fallthrough": false
     }
   ],
