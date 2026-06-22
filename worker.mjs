@@ -21,13 +21,9 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname === "/admin") {
-      return requireAdmin(request) ?? env.ASSETS.fetch(new Request(new URL("/admin.html", url), request));
-    }
+    if (url.pathname === "/admin") return env.ASSETS.fetch(new Request(new URL("/admin.html", url), request));
 
-    if (url.pathname.startsWith("/api/admin/")) {
-      return requireAdmin(request) ?? handleAdminApi(request, env, url);
-    }
+    if (url.pathname.startsWith("/api/admin/")) return handleAdminApi(request, env, url);
 
     const slug = url.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
 
@@ -50,14 +46,6 @@ export default {
     return env.ASSETS.fetch(new Request(new URL("/404.html", url), request));
   },
 };
-
-function requireAdmin(request) {
-  if (request.headers.get("Cf-Access-Authenticated-User-Email")) {
-    return null;
-  }
-
-  return json({ error: "Cloudflare Access authentication is required." }, 401);
-}
 
 async function handleAdminApi(request, env, url) {
   if (!env.SHORTLINKS) {

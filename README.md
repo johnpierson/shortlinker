@@ -18,7 +18,7 @@ The owner panel is available at `/admin`. Before deploying, protect both paths w
 1. In **Zero Trust → Access → Applications**, create a **Self-hosted** application.
 2. Add `jtp.fyi/admin*` and `jtp.fyi/api/admin/*` as application domains.
 3. Add an **Allow** policy for only your identity (email, Google, or GitHub).
-4. Deploy the Worker. The application checks for the Cloudflare Access identity header before rendering `/admin` or allowing its APIs to read or modify KV.
+4. Deploy the Worker. Cloudflare Access is the authentication boundary for `/admin` and its APIs, so both protected paths must have an Allow policy.
 
 `workers_dev = false` prevents the public `workers.dev` hostname from bypassing your Access-protected custom domain.
 
