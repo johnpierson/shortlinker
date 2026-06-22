@@ -17,10 +17,11 @@
         <p class="eyebrow">SHORTCUT CONTROL PANEL</p>
         <h1 id="admin-title">Make a little<br />link happen.</h1>
         <form id="link-form" class="link-form">
+          <input id="original-slug" type="hidden" />
           <label for="slug">Short path <input id="slug" name="slug" maxlength="80" pattern="[a-zA-Z0-9_-]+" placeholder="notes" required /></label>
           <label for="destination">Destination URL <input id="destination" name="destination" type="url" placeholder="https://example.com" required /></label>
           <label for="label">Label <input id="label" name="label" maxlength="120" placeholder="A helpful thing" required /></label>
-          <button class="primary-button" type="submit">Save link <span aria-hidden="true">→</span></button>
+          <div class="form-actions"><button class="primary-button" type="submit">Save link <span aria-hidden="true">→</span></button><button id="cancel-edit" class="text-button" type="button" hidden>Cancel edit</button></div>
         </form>
         <p id="form-status" class="form-status" aria-live="polite"></p>
       </section>

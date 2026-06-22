@@ -11,7 +11,7 @@ function escapeHtml(value) {
 
 async function loadLinks() {
   try {
-    const response = await fetch("links.json", { cache: "no-store" });
+    const response = await fetch("/api/links", { cache: "no-store" });
     if (!response.ok) throw new Error("Could not load links");
     const links = await response.json();
     linkCount.textContent = `${links.length} ${links.length === 1 ? "link" : "links"}`;

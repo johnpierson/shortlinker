@@ -21,7 +21,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname === "/admin") return env.ASSETS.fetch(new Request(new URL("/admin.html", url), request));
-    if (url.pathname === "/api/admin/links") return handleAdminLinks(request, env);
+    if (url.pathname === "/api/links") return handlePublicLinks(env);
+    if (url.pathname.startsWith("/api/admin/links")) return handleAdminLinks(request, env, url);
     const slug = url.pathname.replace(/^\/+|\/+$/g, "").toLowerCase();
 
     // Let the static asset service render the landing page and its supporting files.
@@ -34,7 +35,7 @@ export default {
     const savedLink = env.SHORTLINKS
       ? await env.SHORTLINKS.get(slug, { type: "json" })
       : null;
-    const link = savedLink ?? STARTER_LINKS[slug];
+    const link = savedLink?.deleted ? null : savedLink ?? STARTER_LINKS[slug];
 
     if (link?.url) {
       return Response.redirect(link.url, 302);
@@ -44,20 +45,37 @@ export default {
   },
 };
 
-async function handleAdminLinks(request, env) {
+async function handlePublicLinks(env) {
+  if (!env.SHORTLINKS) return json(Object.entries(STARTER_LINKS).map(([slug, link]) => ({ slug, ...link })));
+  return json(await listLinks(env));
+}
+
+async function handleAdminLinks(request, env, url) {
   if (!env.SHORTLINKS) return json({ error: "The SHORTLINKS KV binding is not configured." }, 500);
-  if (request.method === "GET") {
-    const { keys } = await env.SHORTLINKS.list({ limit: 1000 });
-    const links = await Promise.all(keys.map(async ({ name }) => {
-      const link = await env.SHORTLINKS.get(name, { type: "json" });
-      return link?.url ? { slug: name, ...link } : null;
-    }));
-    return json(links.filter(Boolean).sort((left, right) => left.slug.localeCompare(right.slug)));
+  if (url.pathname === "/api/admin/links") {
+    if (request.method === "GET") return json(await listLinks(env));
+    if (request.method === "POST") return saveLink(request, env);
+    return new Response(null, { status: 405, headers: { Allow: "GET, POST" } });
   }
-  if (request.method !== "POST") return new Response(null, { status: 405, headers: { Allow: "GET, POST" } });
+  const match = url.pathname.match(/^\/api\/admin\/links\/([a-z0-9_-]+)$/i);
+  if (!match) return json({ error: "Not found." }, 404);
+  if (request.method === "PUT") return saveLink(request, env, match[1].toLowerCase());
+  if (request.method === "DELETE") return deleteLink(match[1].toLowerCase(), env);
+  return new Response(null, { status: 405, headers: { Allow: "PUT, DELETE" } });
+}
+
+async function listLinks(env) {
+  const { keys } = await env.SHORTLINKS.list({ limit: 1000 });
+  const storedLinks = await Promise.all(keys.map(async ({ name }) => ({ slug: name, link: await env.SHORTLINKS.get(name, { type: "json" }) })));
+  const links = new Map(storedLinks.map(({ slug, link }) => [slug, link?.deleted ? null : link?.url ? { slug, ...link } : null]));
+  for (const [slug, link] of Object.entries(STARTER_LINKS)) if (!links.has(slug)) links.set(slug, { slug, ...link });
+  return [...links.values()].filter(Boolean).sort((left, right) => left.slug.localeCompare(right.slug));
+}
+
+async function saveLink(request, env, fixedSlug) {
   let body;
   try { body = await request.json(); } catch { return json({ error: "Send a JSON link payload." }, 400); }
-  const slug = String(body.slug || "").trim().toLowerCase();
+  const slug = fixedSlug ?? String(body.slug || "").trim().toLowerCase();
   const label = String(body.label || "").trim();
   const destination = String(body.url || "").trim();
   if (!/^[a-z0-9_-]{1,80}$/.test(slug)) return json({ error: "Use letters, numbers, hyphens, or underscores for the path." }, 400);
@@ -67,6 +85,13 @@ async function handleAdminLinks(request, env) {
   if (url.protocol !== "http:" && url.protocol !== "https:") return json({ error: "Only HTTP and HTTPS destinations are allowed." }, 400);
   await env.SHORTLINKS.put(slug, JSON.stringify({ url: url.href, label }));
   return json({ slug, url: url.href, label }, 201);
+}
+
+async function deleteLink(slug, env) {
+  const existing = await env.SHORTLINKS.get(slug, { type: "json" });
+  if ((!existing?.url && !STARTER_LINKS[slug]) || existing?.deleted) return json({ error: `jtp.fyi/${slug} does not exist.` }, 404);
+  await env.SHORTLINKS.put(slug, JSON.stringify({ deleted: true }));
+  return new Response(null, { status: 204 });
 }
 
 function json(body, status = 200) { return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=UTF-8" } }); }
