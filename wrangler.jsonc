@@ -4,14 +4,27 @@
   "main": "worker.mjs",
   "compatibility_date": "2026-06-22",
   "workers_dev": false,
+  "preview_urls": false,
   "observability": {
     "enabled": true
   },
   "rules": [
     {
       "type": "Text",
-      "globs": ["public/**/*.html", "public/**/*.css", "public/**/*.js", "public/**/*.json"],
-      "fallthrough": true
+      "globs": ["public/**/*.css", "public/**/*.js", "public/**/*.json"],
+      "fallthrough": false
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "jtp.fyi",
+      "custom_domain": true
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SHORTLINKS",
+      "id": "1164f82de71e4328838366925812ee57"
     }
   ],
   "compatibility_flags": [
