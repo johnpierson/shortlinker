@@ -1,5 +1,15 @@
 [
   {
+    "slug": "bio",
+    "url": "https://bio.link/johntpierson",
+    "label": "Bio"
+  },
+  {
+    "slug": "tesla",
+    "url": "https://www.tesla.com/referral/john269537",
+    "label": "Tesla referral"
+  },
+  {
     "slug": "github",
     "url": "https://github.com/johnpierson",
     "label": "GitHub"
