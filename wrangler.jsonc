@@ -10,7 +10,8 @@
   "rules": [
     {
       "type": "Text",
-      "globs": ["public/**/*.html", "public/**/*.css", "public/**/*.js", "public/**/*.json"]
+      "globs": ["public/**/*.html", "public/**/*.css", "public/**/*.js", "public/**/*.json"],
+      "fallthrough": true
     }
   ],
   "compatibility_flags": [
