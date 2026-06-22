@@ -1,16 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "shortlinker",
-  "main": "worker.mjs",
   "compatibility_date": "2026-06-22",
-  "workers_dev": false,
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "./public",
-    "binding": "ASSETS",
-    "run_worker_first": true
+    "directory": "."
   },
   "compatibility_flags": [
     "nodejs_compat"
