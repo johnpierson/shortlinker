@@ -1,0 +1,11 @@
+name = "shortlinker"
+main = "worker.mjs"
+compatibility_date = "2026-06-22"
+
+[[kv_namespaces]]
+binding = "SHORTLINKS"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+[assets]
+directory = "."
+binding = "ASSETS"

@@ -1,16 +1,22 @@
 # jtp.fyi
 
-A static GitHub Pages short-link site. Link creation happens from the owner panel and commits directly to `links.json` through the GitHub API; tokens live only in the active browser tab.
+A personal short-link site for `jtp.fyi`, deployed as a Cloudflare Worker. The source code remains public on GitHub; the Worker and KV namespace are Cloudflare account resources.
 
-## Publish
+## Deploy to Cloudflare
 
-1. Create a GitHub repository and push this directory to its default branch.
-2. In **Settings → Pages**, deploy from that branch’s root directory.
-3. In **Settings → Pages → Custom domain**, set `jtp.fyi`. The included `CNAME` file also tells Pages the intended domain.
-4. At your DNS provider, add GitHub Pages records for the apex domain and `www` as described in GitHub’s custom-domain documentation. Enable HTTPS after DNS verifies.
+1. In Cloudflare KV, create a namespace named `SHORTLINKS` and copy its namespace ID.
+2. Replace `REPLACE_WITH_YOUR_KV_NAMESPACE_ID` in `wrangler.toml` with that ID.
+3. Connect this repository to the `shortlinker` Worker through Workers Builds, or deploy with Wrangler.
+4. In **Workers & Pages → shortlinker → Settings → Domains & Routes**, add `jtp.fyi` as a custom domain.
 
-## Create links
+The Worker serves the landing page as static assets, then checks KV for short links. It falls back to the starter links in `worker.mjs` until KV has been populated.
 
-Open the site, select **Admin**, then create a GitHub fine-grained personal access token with repository-only **Contents: Read and write** permission. Enter `owner/repository` and the token, then publish links. GitHub Pages normally takes a minute or two to deploy the resulting `links.json` change.
+## Add a KV link
 
-The redirect mechanism uses `404.html`, which GitHub Pages serves for unrecognized paths. It looks up the requested path in `links.json` and forwards the visitor to the matching URL.
+In **Storage & Databases → KV → SHORTLINKS**, create a key using the short path (for example, `bio`) and use JSON as the value:
+
+```json
+{"url":"https://bio.link/johntpierson","label":"Bio"}
+```
+
+KV entries take precedence over the starter links, so they are ready for a future protected admin interface.
